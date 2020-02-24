@@ -18,13 +18,24 @@ The following is a list of the hardware needed to reproduce this demo:
 * 1 x [Flow deck v2](https://www.bitcraze.io/flow-deck-v2/),
 * 1 x [Crazyflie-compatible remote controller](https://www.bitcraze.io/docs/crazyflie-clients-python/master/inputdevices/).
 
-## How to build?
+## How to build and flash the firmware?
 
-Coming soon...
+1. Run the builder Docker:
+```bash
+docker-compose run builder
+```
 
-## How to flash?
+2. Build the micro-ROS firmware inside the Docker:
+```bash
+ros2 run micro_ros_setup build_firmware.sh
+```
 
-Coming soon...
+3. Put the Crazyflie in DFU mode following the [official instructions](https://www.bitcraze.io/docs/crazyflie-firmware/master/dfu/).
+
+4. Flash the micro-ROS firmware:
+```bash
+ros2 run micro_ros_setup flash_firmware.sh
+```
 
 ## How to use?
 
