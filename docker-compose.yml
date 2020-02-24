@@ -1,0 +1,13 @@
+version: '3'
+services:
+    builder:
+        build: ./dockerfile/builder
+        volumes:
+            - /dev/bus/usb:/dev/bus/usb
+        privileged: true
+    rviz:
+        build: ./dockerfile/rviz
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+        environment:
+            DISPLAY: unix:0
