@@ -1,0 +1,14 @@
+@startuml
+
+skinparam monochrome true
+
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/ros2_icon.png>] as ros2
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/crazyflie_icon.jpg>] as crazyflie
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/rviz_icon.png>] as rviz
+
+crazyflie .left.> ros2 : "/drone/odometry\n [Point32]"
+crazyflie .left.> ros2 : "/drone/attitude\n [Point32]"
+rviz <.right. ros2 : "/drone/odometry\n [Point32]"
+rviz <.right. ros2 : "/drone/attitude\n [Point32]"
+
+@endutml
