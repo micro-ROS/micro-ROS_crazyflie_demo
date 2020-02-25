@@ -22,7 +22,7 @@ The following is a list of the hardware needed to reproduce this demo:
 
 1. Run the builder Docker:
 ```bash
-docker-compose run builder
+docker-compose run cf_builder
 ```
 
 2. Build the micro-ROS firmware inside the Docker:

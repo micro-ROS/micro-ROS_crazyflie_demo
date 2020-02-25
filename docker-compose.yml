@@ -1,11 +1,29 @@
 version: '3'
 services:
-    builder:
+    cf_builder:
         build: ./dockerfile/builder
         volumes:
             - /dev/bus/usb:/dev/bus/usb
         privileged: true
-    rviz:
+    cf_client:
+        build: ./dockerfile/client
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - /dev/bus/usb:/dev/bus/usb
+            - ./dockerfile/.env:/.env
+            - /dev/pts:/dev/pts
+        privileged: true
+        environment:
+            DISPLAY: unix:0
+        entrypoint: cfclient
+    cf_agent:
+        build: ./dockerfile/agent
+        volumes:
+            - /dev/pts:/dev/pts
+        env_file:
+            - ./dockerfile/.env/variables.env
+        network_mode: "host"
+    cf_rviz:
         build: ./dockerfile/rviz
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
