@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>micro-ros_crazyflie_demo_remote</name>
+  <version>0.0.1</version>
+  <description>Launch file for ROS 2 for the micro-ROS demo based on a Crazyflie</description>
+  <maintainer email="ralph.lange@de.bosch.com">Ralph Lange</maintainer>
+  <license>Apache 2.0</license>
+
+  <depend>ament_index_python</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>rviz2</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rclpy</depend>
+  <depend>tf2_ros</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <!-- <exec_depend>micro-ros_crazyflie_demo_robot-description</exec_depend> -->
+  <exec_depend>teleop_twist_joy</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

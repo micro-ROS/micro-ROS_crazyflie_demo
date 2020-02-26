@@ -23,9 +23,13 @@ services:
         env_file:
             - ./dockerfile/.env/variables.env
         network_mode: "host"
+        depends_on:
+            - cf_client
     cf_rviz:
         build: ./dockerfile/rviz
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
+        privileged: true
         environment:
             DISPLAY: unix:0
+        network_mode: "host"
