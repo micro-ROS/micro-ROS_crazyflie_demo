@@ -76,4 +76,4 @@ if [ "$HOST" = "" -o "$PORT" = "" ]; then
   usage 2
 fi
 
-#wait_for "$@"
+wait_for "$@"

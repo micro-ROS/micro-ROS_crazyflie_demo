@@ -24,6 +24,9 @@ services:
         network_mode: "host"
         depends_on:
             - cf_client
+    cf_translator:
+        build: ./dockerfile/translator
+        network_mode: "host"
     cf_rviz:
         build: ./dockerfile/rviz
         volumes:
@@ -32,3 +35,5 @@ services:
         environment:
             DISPLAY: unix:0
         network_mode: "host"
+        depends_on:
+            - cf_translator
