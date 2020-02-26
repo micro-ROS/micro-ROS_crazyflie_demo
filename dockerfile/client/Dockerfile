@@ -4,6 +4,7 @@ RUN apt update \
 &&  apt install -y \
         git \
         usbutils \
+        socat \
 &&  rm -rf /var/apt/apt/lists/*
 
 RUN apt update \
@@ -14,6 +15,12 @@ RUN apt update \
         python3-pyqt5.qtsvg \
 &&  rm -rf /var/apt/apt/lists/*
 
-RUN git clone -b feature/uxrce_bridge https://github.com/eProsima/crazyflie-clients-python.git \
+RUN git clone -b Micro-XRCE-DDS_Bridge https://github.com/eProsima/crazyflie-clients-python.git \
 &&  cd crazyflie-clients-python \
 &&  pip3 install -e .
+
+RUN mkdir /.env
+
+COPY ./entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bash"]

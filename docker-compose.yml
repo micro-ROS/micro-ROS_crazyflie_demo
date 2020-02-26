@@ -10,18 +10,17 @@ services:
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
             - /dev/bus/usb:/dev/bus/usb
-            - ./dockerfile/.env:/.env
             - /dev/pts:/dev/pts
         privileged: true
         environment:
             DISPLAY: unix:0
-        entrypoint: cfclient
+        network_mode: "host"
+        ports:
+            - 1189:1189
     cf_agent:
         build: ./dockerfile/agent
         volumes:
             - /dev/pts:/dev/pts
-        env_file:
-            - ./dockerfile/.env/variables.env
         network_mode: "host"
         depends_on:
             - cf_client
