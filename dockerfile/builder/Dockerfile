@@ -20,3 +20,8 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh \
 &&  apt install -y dfu-util \
 &&  ros2 run micro_ros_setup create_firmware_ws.sh freertos crazyflie21 \
 &&  rm -rf /var/lib/apt/lists/*
+
+COPY ./entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bash"]
