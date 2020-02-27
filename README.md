@@ -55,3 +55,7 @@ To stop the application just down the Docker Compose:
 ```bash
 docker-compose down
 ```
+
+## How to interact with the [Kobuki demo](https://github.com/micro-ROS/micro-ROS_kobuki_demo)?
+
+Coming soon...
