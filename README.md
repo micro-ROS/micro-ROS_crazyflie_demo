@@ -1,6 +1,8 @@
 # The micro-ROS_crazyflie_demo repository
 
-Introduction ...
+Coming soon...
+
+![](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/diagrams/architecture.puml)
 
 ## Purpose of the project
 
@@ -20,23 +22,40 @@ The following is a list of the hardware needed to reproduce this demo:
 
 ## How to build and flash the firmware?
 
-1. Run the builder Docker:
+1. run the builder Docker:
 ```bash
 docker-compose run cf_builder
 ```
 
-2. Build the micro-ROS firmware inside the Docker:
+2. build the micro-ROS firmware inside the Docker:
 ```bash
 ros2 run micro_ros_setup build_firmware.sh
 ```
 
-3. Put the Crazyflie in DFU mode following the [official instructions](https://www.bitcraze.io/docs/crazyflie-firmware/master/dfu/).
+3. put the Crazyflie in DFU mode following the [official instructions](https://www.bitcraze.io/docs/crazyflie-firmware/master/dfu/).
 
-4. Flash the micro-ROS firmware:
+4. flash the micro-ROS firmware:
 ```bash
 ros2 run micro_ros_setup flash_firmware.sh
 ```
 
 ## How to use?
+
+To start the application just two step are needed:
+
+1. up the Docker Compose:
+
+```bash
+docker-compose up -d
+```
+2. [connect](https://www.bitcraze.io/getting-started-with-the-crazyflie-2-0/#connect-pc-client) to the Crazyflie.
+
+To stop the application just down the Docker Compose:
+
+```bash
+docker-compose down
+```
+
+## How to interact with the [Kobuki demo](https://github.com/micro-ROS/micro-ROS_kobuki_demo)?
 
 Coming soon...

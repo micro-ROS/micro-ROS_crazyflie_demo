@@ -1,0 +1,32 @@
+@startuml
+
+skinparam monochrome true
+
+node <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/ros2_icon.png>  as ros2 {
+  interface "/drone/odometry"   as odometry
+  interface "/drone/attitude"   as attitude
+  interface "/drone/path"       as path
+  interface "/tf"               as tf
+}
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/crazyflie_icon.jpg>] as crazyflie
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/rviz_icon.png>] as rviz
+[translator.py\n\n <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/translator_icon.png>] as translator
+
+note top of ros2
+    | Topic | Type |
+    | /drone/odometry | Point32 |
+    | /drone/attitude | Point32 |
+    | /tf | TFMessage |
+    | /drone/path | Path |
+end note
+
+crazyflie   -up->     odometry
+crazyflie   -up->     attitude
+rviz        <.up.    tf
+rviz        <.up.    path
+translator  -up->       tf
+translator  -up->       path
+translator  <.up.       odometry
+translator  <.up.       attitude
+
+@endutml
