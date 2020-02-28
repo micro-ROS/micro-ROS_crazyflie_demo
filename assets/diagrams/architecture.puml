@@ -2,15 +2,15 @@
 
 skinparam monochrome true
 
-node <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/ros2_icon.png>  as ros2 {
+node <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/master/assets/images/ros2_icon.png>  as ros2 {
   interface "/drone/odometry"   as odometry
   interface "/drone/attitude"   as attitude
   interface "/drone/path"       as path
   interface "/tf"               as tf
 }
-[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/crazyflie_icon.jpg>] as crazyflie
-[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/rviz_icon.png>] as rviz
-[translator.py\n\n <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/feature/assets/assets/images/translator_icon.png>] as translator
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/master/assets/images/crazyflie_icon.jpg>] as crazyflie
+[<img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/master/assets/images/rviz_icon.png>] as rviz
+[translator.py\n\n <img:https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/master/assets/images/translator_icon.png>] as translator
 
 note top of ros2
     | Topic | Type |
