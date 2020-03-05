@@ -4,7 +4,7 @@
 FROM ros:dashing
 RUN mkdir -p uros_ws
 WORKDIR uros_ws
-RUN git clone --depth 1 -b feature/mempools_refactor https://github.com/micro-ROS/micro-ros-build.git src/micro-ros-build \
+RUN git clone --depth 1 -b https://github.com/micro-ROS/micro-ros-build.git src/micro-ros-build \
 &&  . /opt/ros/$ROS_DISTRO/setup.sh \
 &&  apt update \
 &&  apt install ed \
