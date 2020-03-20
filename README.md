@@ -29,6 +29,7 @@ docker-compose run cf_builder
 
 2. build the micro-ROS firmware inside the Docker:
 ```bash
+ros2 run micro_ros_setup configure_firmware.sh crazyflie_position_publisher
 ros2 run micro_ros_setup build_firmware.sh
 ```
 
