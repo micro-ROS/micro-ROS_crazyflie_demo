@@ -18,7 +18,7 @@ The following is a list of the hardware needed to reproduce this demo:
 * 1 x [Crazyflie 2.1](https://www.bitcraze.io/crazyflie-2-1/),
 * 1 x [Crazyradio PA](https://www.bitcraze.io/crazyradio-pa/),
 * 1 x [Flow deck v2](https://www.bitcraze.io/flow-deck-v2/),
-* 1 x [Crazyflie-compatible remote controller](https://www.bitcraze.io/docs/crazyflie-clients-python/master/inputdevices/).
+* 1 x [Crazyflie-compatible remote controller](https://www.bitcraze.io/documentation/repository/crazyflie-clients-python/master/userguides/inputdevices/).
 
 ## How to build and flash the firmware?
 
