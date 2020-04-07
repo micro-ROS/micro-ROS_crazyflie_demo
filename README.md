@@ -2,7 +2,7 @@
 
 This demos aims to show the benefits of micro-ROS regarding its low resource consumption and its extensible and modular communication system.
 In particular, it is focused on the micro-ROS's middleware layer where [eProsima Micro XRCE-DDS](https://github.com/eProsima/Micro-XRCE-DDS) is the default implementation.
-This software, base on the [DDS-XRCE] wire protocol, offers to micro-ROS client-server communication with the following characteristics:
+This software, base on the [DDS-XRCE](https://www.omg.org/spec/DDS-XRCE/About-DDS-XRCE/) wire protocol, offers to micro-ROS client-server communication with the following characteristics:
 
 * Multi-transport protocol support (UDP, TCP and Serial).
 * Peer-to-peer communication.
