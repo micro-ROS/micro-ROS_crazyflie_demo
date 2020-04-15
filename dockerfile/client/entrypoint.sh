@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cfclient &
+python3 micro-ROS-brigde.py &
 while [ ! -f "/.env/variables.env" ]; do
     sleep 2
 done

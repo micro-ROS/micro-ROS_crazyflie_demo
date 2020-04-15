@@ -15,12 +15,14 @@ RUN apt update \
         python3-pyqt5.qtsvg \
 &&  rm -rf /var/apt/apt/lists/*
 
-RUN git clone -b Micro-XRCE-DDS_Bridge https://github.com/eProsima/crazyflie-clients-python.git \
+RUN git clone -b master https://github.com/bitcraze/crazyflie-lib-python \
 &&  cd crazyflie-clients-python \
+&&  git checkout d77c1d7179046f51aba19828bc9c0dcb45570fc0
 &&  pip3 install -e .
 
 RUN mkdir /.env
 
 COPY ./entrypoint.sh /
+COPY ./micro-ROS-brigde.py /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
