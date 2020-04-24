@@ -11,7 +11,7 @@ from cflib.crtp.crtpstack import CRTPPacket
 from cflib.drivers.crazyradio import Crazyradio
 from cflib.crazyflie.log import LogConfig
 
-CRTP_PORT_MICROROS = 9
+CRTP_PORT_MICROROS = 10
 
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.ERROR)
@@ -38,24 +38,28 @@ class RadioBridge:
         self._slave = slave
         self._console = ""
 
+        self._agentdata = bytearray()
+        self._agentready = False
+
         # Try to connect to the Crazyflie
         self._cf.open_link(self.link_uri)
 
         # Variable used to keep main loop occupied until disconnect
         self.is_connected = True
 
-        threading.Thread(target=self._server).start()
+        threading.Thread(target=self._agentlistener).start()
         threading.Thread(target=self._print_quality).start()
     
-    def _server(self):
+    def _agentlistener(self):
         while self.is_connected:
             data = os.read(self._master, 30)
-            if(data):
-                # print("PACKET FROM AGENT: " +  str(data))
-                pk = CRTPPacket()
-                pk.port = CRTP_PORT_MICROROS
-                pk.data = data
-                self._cf.send_packet(pk)
+            # self._agentdata.append(bytearray(data))
+            # self._agentdata = self._agentdata + data
+            pk = CRTPPacket()
+            pk.port = CRTP_PORT_MICROROS
+            pk.data = data
+            # print("FROM AGENT: " +  str(pk.data))
+            self._cf.send_packet(pk)
 
     def _connected(self, link_uri):
         # print('Connected to %s' % link_uri)
@@ -87,9 +91,10 @@ class RadioBridge:
 
     def _data_received(self, pk):
         if pk.port == CRTP_PORT_MICROROS:
-            # print("TO AGENT: " +  str(pk.data))
-            # print("Received {:s} on port {:d}: ".format(str(pk.data), CRTP_PORT_MICROROS))
-            os.write(self._master, pk.data)
+            if pk.channel == 0:
+                # print("TO AGENT: " +  str(pk.data))
+                # print("Received {:s} on port {:d}: ".format(str(pk.data), CRTP_PORT_MICROROS))
+                os.write(self._master, pk.data)
 
     def _connection_failed(self, link_uri, msg):
         # print('Connection to %s failed: %s' % (link_uri, msg))
@@ -105,6 +110,7 @@ class RadioBridge:
         print("Disconnected. Reconnecting...")
         self.is_connected = True
         # self._cf.open_link(self.link_uri)
+
 
 
 if __name__ == '__main__':
@@ -131,7 +137,7 @@ if __name__ == '__main__':
 
         if len(available) > 0:
             link_uri = available[0][0]
-            link_uri = "radio://0/65/2M"
+            link_uri = "radio://0/30/2M"
             print('Connecting to: ' + str(link_uri))
             le = RadioBridge(link_uri, master, slave)
 
