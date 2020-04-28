@@ -37,3 +37,11 @@ services:
         network_mode: "host"
         depends_on:
             - cf_translator
+    cf_gcs:
+        build: ./dockerfile/gcs
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+        privileged: true
+        environment:
+            DISPLAY: unix:0
+        network_mode: "host"
