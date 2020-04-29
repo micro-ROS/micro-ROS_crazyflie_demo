@@ -104,7 +104,7 @@ class RadioBridge:
         # print('Disconnected from %s' % link_uri)
         print("Disconnected. Reconnecting...")
         self.is_connected = True
-        # self._cf.open_link(self.link_uri)
+        self._cf.open_link(self.link_uri)
 
 
 if __name__ == '__main__':

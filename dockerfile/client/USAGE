@@ -1,0 +1,13 @@
+GCS
+
+sudo socat PTY,link=/dev/ttyS10 PTY,link=/dev/ttyS11
+sudo ./MicroXRCEAgent serial --dev /dev/ttyS10 -v6 --refs agent.refs 
+sudo python3 dockerfile/client/headless.py
+
+
+RPi
+
+sudo socat PTY,link=/dev/ttyS10 PTY,link=/dev/ttyS11
+sudo ./weather_agent 8888 /dev/ttyS10
+sudo python3 dockerfile/client/micro-ROS-sec-bridge.py 
+./weather_publisher_fake_1s 

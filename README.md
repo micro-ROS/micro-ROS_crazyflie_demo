@@ -71,6 +71,8 @@ The following is a list of the hardware needed to reproduce this demo:
 
 ## How to build and flash the firmware?
 
+*NOTE: Take into account that Crazyflie firmware of NRF51 radio device should be updated to this [commit](https://github.com/bitcraze/crazyflie2-nrf-firmware/commit/b1420de7511d5a9a79f989b1f142593da3c51e22)*
+
 1. Run the builder Docker:
 ```bash
 docker-compose run cf_builder

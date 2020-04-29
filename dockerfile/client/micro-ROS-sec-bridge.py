@@ -3,7 +3,7 @@ import socket
 import sys
 import threading
 import time
-import pty,os
+import serial
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -17,7 +17,7 @@ CRTP_PORT_MICROROS = 10
 logging.basicConfig(level=logging.ERROR)
 
 class RadioBridge:
-    def __init__(self, link_uri, master, slave):
+    def __init__(self, link_uri, serial_dev):
         self.link_uri = link_uri
         self._cf = Crazyflie()
 
@@ -34,12 +34,10 @@ class RadioBridge:
         self._link_quality = 0
         self._link_quality_n = 0
 
-        self._master = master
-        self._slave = slave
-        self._console = ""
+        self._serial_dev = serial_dev
+        self._serial = serial.Serial(serial_dev)
 
-        self._agentdata = bytearray()
-        self._agentready = False
+        self._console = ""
 
         # Try to connect to the Crazyflie
         self._cf.open_link(self.link_uri)
@@ -52,13 +50,10 @@ class RadioBridge:
     
     def _agentlistener(self):
         while self.is_connected:
-            data = os.read(self._master, 30)
-            # self._agentdata.append(bytearray(data))
-            # self._agentdata = self._agentdata + data
+            data = self._serial.read(size=30)
             pk = CRTPPacket()
             pk.port = CRTP_PORT_MICROROS
             pk.data = data
-            # print("FROM AGENT: " +  str(pk.data))
             self._cf.send_packet(pk)
 
     def _connected(self, link_uri):
@@ -92,24 +87,20 @@ class RadioBridge:
     def _data_received(self, pk):
         if pk.port == CRTP_PORT_MICROROS:
             if pk.channel == 0:
-                # print("TO AGENT: " +  str(pk.data))
-                # print("Received {:s} on port {:d}: ".format(str(pk.data), CRTP_PORT_MICROROS))
-                os.write(self._master, pk.data)
+                self._serial.write(pk.data)
 
     def _connection_failed(self, link_uri, msg):
-        # print('Connection to %s failed: %s' % (link_uri, msg))
         pass
 
     def _connection_lost(self, link_uri, msg):
-        # print('Connection to %s lost: %s' % (link_uri, msg))
         pass
 
     def _disconnected(self, link_uri):
-        # """Callback when the Crazyflie is disconnected (called in all cases)"""
-        # print('Disconnected from %s' % link_uri)
         print("Disconnected. Reconnecting...")
         self.is_connected = True
-        # self._cf.open_link(self.link_uri)
+        self._serial.close()
+        self._serial = serial.Serial(self._serial_dev)
+        self._cf.open_link(self.link_uri)
 
 
 
@@ -119,11 +110,11 @@ if __name__ == '__main__':
     cflib.crtp.radiodriver.set_retries(100)
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
-    # Open serial port for Agent communication
-    master,slave = pty.openpty()
-    master_name = os.ttyname(master)
-    slave_name = os.ttyname(slave)
-    print('============= Micro-XRCE-DDS bridge port: %s =============' % slave_name)
+    cr = Crazyradio()
+    cr.set_power(0)
+
+    ser = '/dev/ttyS11'
+
     try:
         f = open("/.env/variables.env", "w+")
         f.write("SERIAL_DEV=%s" % slave_name)
@@ -139,7 +130,7 @@ if __name__ == '__main__':
             link_uri = available[0][0]
             link_uri = "radio://0/30/2M"
             print('Connecting to: ' + str(link_uri))
-            le = RadioBridge(link_uri, master, slave)
+            le = RadioBridge(link_uri, ser)
 
             try:
                 while le.is_connected:

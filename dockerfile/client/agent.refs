@@ -1,0 +1,75 @@
+<profiles>
+
+
+    <participant profile_name="participant_profile">
+        <rtps>
+            <name>default_xrce_participant</name>
+        </rtps>
+    </participant>
+
+
+
+
+
+    <topic profile_name="drone/publisher__t">
+        <name>rt/drone/publisher</name>
+        <dataType>sensor_msgs::msg::dds_::LaserEcho_</dataType>
+    </topic>
+
+    <data_writer profile_name="drone/publisher__dw">
+        <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+        <qos>
+          <reliability>
+            <kind>BEST_EFFORT</kind>
+          </reliability>
+        </qos>
+        <topic>
+            <kind>NO_KEY</kind>
+            <name>rt/drone/publisher</name>
+            <dataType>sensor_msgs::msg::dds_::LaserEcho_</dataType>
+        </topic>
+    </data_writer>
+
+
+     <topic profile_name="drone/odometry__t">
+        <name>rt/drone/odometry</name>
+        <dataType>geometry_msgs::msg::dds_::Point32_</dataType>
+    </topic>
+
+    <data_writer profile_name="drone/odometry__dw">
+        <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+        <qos>
+          <reliability>
+            <kind>BEST_EFFORT</kind>
+          </reliability>
+        </qos>
+        <topic>
+            <kind>NO_KEY</kind>
+            <name>rt/drone/odometry</name>
+            <dataType>geometry_msgs::msg::dds_::Point32_</dataType>
+        </topic>
+    </data_writer>
+
+
+
+
+     <topic profile_name="drone/attitude__t">
+        <name>rt/drone/attitude</name>
+        <dataType>geometry_msgs::msg::dds_::Point32_</dataType>
+    </topic>
+
+    <data_writer profile_name="drone/attitude__dw">
+        <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+        <qos>
+          <reliability>
+            <kind>BEST_EFFORT</kind>
+          </reliability>
+        </qos>
+        <topic>
+            <kind>NO_KEY</kind>
+            <name>rt/drone/attitude</name>
+            <dataType>geometry_msgs::msg::dds_::Point32_</dataType>
+        </topic>
+    </data_writer>
+
+</profiles>

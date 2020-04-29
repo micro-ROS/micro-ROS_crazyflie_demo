@@ -1,28 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-#     ||          ____  _ __
-#  +------+      / __ )(_) /_______________ _____  ___
-#  | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
-#  +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
-#   ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
-#
-#  Copyright (C) 2013 Bitcraze AB
-#
-#  Crazyflie Nano Quadcopter Client
-#
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA  02110-1301, USA.
 """
 Headless client for the Crazyflie.
 """
@@ -30,10 +5,14 @@ import logging
 import os
 import signal
 import sys
+import serial
+import threading
+import time
 
 import cfclient.utils
 import cflib.crtp
 from cfclient.utils.input import JoystickReader
+from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crazyflie import Crazyflie
 
 if os.name == 'posix':
@@ -46,18 +25,36 @@ if os.name == 'posix':
 #   so it doesn't need a windowing system.
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
+CRTP_PORT_MICROROS = 9
 
 class HeadlessClient():
     """Crazyflie headless client"""
 
-    def __init__(self):
+    def __init__(self, serial_dev):
         """Initialize the headless client and libraries"""
-        cflib.crtp.init_drivers()
-
         self._jr = JoystickReader(do_device_discovery=False)
 
-        self._cf = Crazyflie(ro_cache=None,
-                             rw_cache=cfclient.config_path + "/cache")
+        self._cf = Crazyflie()
+        self._cf.packet_received.add_callback(self._data_received)
+        self._cf.disconnected.add_callback(self._disconnected)
+        self._cf.disconnected.remove_callback(self._cf._disconnected)
+        self._cf.connection_failed.add_callback(self._connection_failed)
+        self._cf.connection_lost.add_callback(self._connection_lost)
+        # self._cf.link_quality_updated.add_callback(lambda x: [])
+        self._cf.console.receivedChar.add_callback(self._console_char)
+        self._jr.input_updated.add_callback(self._cf.commander.send_setpoint)
+
+        self._cf.param.add_update_callback(
+            group="imu_sensors", name="HMC5883L", cb=(
+                lambda name, found: self._jr.set_alt_hold_available(
+                    eval(found))))
+        self._jr.assisted_control_updated.add_callback(
+            lambda enabled: self._cf.param.set_value("flightmode.althold",
+                                                     enabled))
+        
+        self._serial_dev = serial_dev
+        self._serial = serial.Serial(serial_dev, baudrate=115200)
+        self.is_connected = False
 
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -65,6 +62,8 @@ class HeadlessClient():
 
         for d in self._jr.available_devices():
             self._devs.append(d.name)
+        
+        threading.Thread(target=self._serial_listener).start()
 
     def setup_controller(self, input_config, input_device=0, xmode=False):
         """Set up the device reader"""
@@ -94,33 +93,59 @@ class HeadlessClient():
 
     def connect_crazyflie(self, link_uri):
         """Connect to a Crazyflie on the given link uri"""
-        self._cf.connection_failed.add_callback(self._connection_failed)
-        # 2014-11-25 chad: Add a callback for when we have a good connection.
-        self._cf.connected.add_callback(self._connected)
-        self._cf.param.add_update_callback(
-            group="imu_sensors", name="HMC5883L", cb=(
-                lambda name, found: self._jr.set_alt_hold_available(
-                    eval(found))))
-        self._jr.assisted_control_updated.add_callback(
-            lambda enabled: self._cf.param.set_value("flightmode.althold",
-                                                     enabled))
-
+        self._console = ""
+        self.is_connected = True
         self._cf.open_link(link_uri)
-        self._jr.input_updated.add_callback(self._cf.commander.send_setpoint)
+    
+    def _console_char(self, pk):
+        self._console = self._console + str(pk)
+        if "\n" in self._console:
+            print("Console: " + str(self._console ), end="")
+            self._console = ""
 
-    def _connected(self, link):
-        """Callback for a successful Crazyflie connection."""
-        print("Connected to {}".format(link))
+    def _serial_listener(self):
+        while True:
+            if self._serial and self._serial.is_open and self.is_connected:
+                data = self._serial.read(size=30)
+                if(data):
+                    pk = CRTPPacket()
+                    pk.port = CRTP_PORT_MICROROS
+                    pk.data = data
+                    self._cf.send_packet(pk)
+            else:
+                time.sleep(0.1)
 
-    def _connection_failed(self, link, message):
-        """Callback for a failed Crazyflie connection"""
-        print("Connection failed on {}: {}".format(link, message))
-        sys.exit(-1)
+    def _data_received(self, pk):
+        if pk.port == CRTP_PORT_MICROROS:
+            self._serial.write(pk.data)
+            self._serial.flush()
+
+    def _connection_failed(self, link_uri, message):
+        print("Connection failed on {}: {}".format(link_uri, message))
+        self.is_connected = False
+        # self._serial.close()
+        # self._serial = serial.Serial(self._serial_dev)
+        self.connect_crazyflie(link_uri)
 
     def _input_dev_error(self, message):
         """Callback for an input device error"""
         print("Error when reading device: {}".format(message))
-        sys.exit(-1)
+        # sys.exit(-1)
+        self.is_connected = True
+
+    def _connection_lost(self, link_uri, error):
+        print("Connection lost. Reconnecting...")
+        self.is_connected = True
+        # self._serial.close()
+        # self._serial = serial.Serial(self._serial_dev)
+        self.connect_crazyflie(link_uri)
+
+    def _disconnected(self, link_uri):
+        print("Disconnected. Reconnecting...")
+        self.is_connected = True
+        # self._serial.close()
+        # self._serial = serial.Serial(self._serial_dev)
+        self.connect_crazyflie(link_uri)
 
 
 def main():
@@ -129,9 +154,9 @@ def main():
 
     parser = argparse.ArgumentParser(prog="cfheadless")
     parser.add_argument("-u", "--uri", action="store", dest="uri", type=str,
-                        default="radio://0/10/250K",
+                        default="radio://0/65/2M",
                         help="URI to use for connection to the Crazyradio"
-                             " dongle, defaults to radio://0/10/250K")
+                             " dongle, defaults to radio://0/65/2M")
     parser.add_argument("-i", "--input", action="store", dest="input",
                         type=str, default="PS3_Mode_1",
                         help="Input mapping to use for the controller,"
@@ -150,21 +175,38 @@ def main():
                         help="Enable client-side X-mode")
     (args, unused) = parser.parse_known_args()
 
+    cflib.crtp.radiodriver.set_retries_before_disconnect(-1)
+    cflib.crtp.radiodriver.set_retries(100)
+    cflib.crtp.init_drivers(enable_debug_driver=False)
+
+    ser = '/dev/ttyS11'
+
+    try:
+        f = open("/.env/variables.env", "w+")
+        f.write("SERIAL_DEV=%s" % slave_name)
+        f.close()
+    except:
+        print("No /.env/variables.env wrote")
+
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
 
-    headless = HeadlessClient()
+    headless = HeadlessClient(ser)
 
     if (args.list_controllers):
         headless.list_controllers()
     else:
         if headless.controller_connected():
             headless.setup_controller(input_config=args.input,
-                                      input_device=args.controller,
-                                      xmode=args.xmode)
-            headless.connect_crazyflie(link_uri=args.uri)
+                                    input_device=args.controller,
+                                    xmode=args.xmode)
+
+            while True:
+                headless.connect_crazyflie(link_uri=args.uri)
+                while True:
+                    time.sleep(1)
         else:
             print("No input-device connected, exiting!")
 
