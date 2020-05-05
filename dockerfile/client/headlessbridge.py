@@ -41,8 +41,6 @@ class CrazyradioBridge():
                 pk.port = CRTP_PORT_MICROROS
                 pk.data = data
                 self.link.send_packet(pk)
-            else:
-                time.sleep(0.1)
 
     def _cf_listener(self):
         while self.is_connected:
@@ -64,7 +62,7 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     # Open serial port
-    serialport = serial.Serial(serial_dev, baudrate=115200, timeout=0.1)
+    serialport = serial.Serial(serial_dev, baudrate=115200, timeout=0.2)
 
     # Configure radio link
     cflib.crtp.radiodriver.set_retries_before_disconnect(-1)

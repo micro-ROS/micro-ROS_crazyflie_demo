@@ -61,8 +61,6 @@ class CrazyflieBridgedController():
                 pk.port = CRTP_PORT_MICROROS
                 pk.data = data
                 self._cf.send_packet(pk)
-            else:
-                time.sleep(0.1)
 
     def _data_received(self, pk):
         if pk.port == CRTP_PORT_MICROROS:
