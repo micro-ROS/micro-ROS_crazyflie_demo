@@ -9,6 +9,7 @@ import serial
 import threading
 import time
 import subprocess
+import math
 
 import cflib.crtp
 from cflib.crtp.crtpstack import CRTPPacket
@@ -24,7 +25,9 @@ class CrazyradioBridge():
         """Initialize the headless client and libraries"""
         self._serial = serialport
 
-        self.link = cflib.crtp.get_link_driver(link_uri, None, None)
+        self.link = cflib.crtp.get_link_driver(link_uri, self._link_quality, None)
+        self.link._radio_manager._radios[0].radio.set_power(0)
+
         self.is_connected = True
 
         self.serialthread = threading.Thread(target=self._serial_listener)
@@ -32,6 +35,14 @@ class CrazyradioBridge():
 
         self.cfthread = threading.Thread(target=self._cf_listener)
         self.cfthread.start()
+
+        self._q = []
+
+    def _link_quality(self,q):
+        self._q.append(q)
+        if len(self._q) > 10:
+            print("{:0.3f}".format((1/10)*math.sqrt(sum([x**2 for x in self._q])/len(self._q))), end="\r")
+            self._q = []
 
     def _serial_listener(self):
         while self.is_connected:
