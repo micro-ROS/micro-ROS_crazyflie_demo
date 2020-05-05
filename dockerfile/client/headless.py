@@ -93,6 +93,7 @@ class HeadlessClient():
 
     def connect_crazyflie(self, link_uri):
         """Connect to a Crazyflie on the given link uri"""
+        self.link_uri = link_uri
         self._console = ""
         self.is_connected = True
         self._cf.open_link(link_uri)
@@ -105,27 +106,23 @@ class HeadlessClient():
 
     def _serial_listener(self):
         while True:
-            if self._serial and self._serial.is_open and self.is_connected:
-                data = self._serial.read(size=30)
-                if(data):
-                    pk = CRTPPacket()
-                    pk.port = CRTP_PORT_MICROROS
-                    pk.data = data
-                    self._cf.send_packet(pk)
-            else:
-                time.sleep(0.1)
+            try:
+                if self._serial and self._serial.is_open and self.is_connected:
+                    data = self._serial.read(size=30)
+                    if(data):
+                        pk = CRTPPacket()
+                        pk.port = CRTP_PORT_MICROROS
+                        pk.data = data
+                        self._cf.send_packet(pk)
+                else:
+                    time.sleep(0.1)
+            except:
+                pass
 
     def _data_received(self, pk):
         if pk.port == CRTP_PORT_MICROROS:
             self._serial.write(pk.data)
             self._serial.flush()
-
-    def _connection_failed(self, link_uri, message):
-        print("Connection failed on {}: {}".format(link_uri, message))
-        self.is_connected = False
-        # self._serial.close()
-        # self._serial = serial.Serial(self._serial_dev)
-        self.connect_crazyflie(link_uri)
 
     def _input_dev_error(self, message):
         """Callback for an input device error"""
@@ -133,19 +130,15 @@ class HeadlessClient():
         # sys.exit(-1)
         self.is_connected = True
 
+    def _connection_failed(self, link_uri, msg):
+        pass
+
     def _connection_lost(self, link_uri, error):
-        print("Connection lost. Reconnecting...")
-        self.is_connected = True
-        # self._serial.close()
-        # self._serial = serial.Serial(self._serial_dev)
-        self.connect_crazyflie(link_uri)
+        pass
 
     def _disconnected(self, link_uri):
-        print("Disconnected. Reconnecting...")
-        self.is_connected = True
-        # self._serial.close()
-        # self._serial = serial.Serial(self._serial_dev)
-        self.connect_crazyflie(link_uri)
+        pass
+
 
 
 def main():
