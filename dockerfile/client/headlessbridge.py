@@ -30,13 +30,14 @@ class CrazyradioBridge():
 
         self.is_connected = True
 
+        self._q = []
+
         self.serialthread = threading.Thread(target=self._serial_listener)
         self.serialthread.start()
 
         self.cfthread = threading.Thread(target=self._cf_listener)
         self.cfthread.start()
 
-        self._q = []
 
     def _link_quality(self,q):
         self._q.append(q)

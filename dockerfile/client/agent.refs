@@ -7,26 +7,41 @@
         </rtps>
     </participant>
 
-
-
-
-
-    <topic profile_name="drone/publisher__t">
-        <name>rt/drone/publisher</name>
-        <dataType>sensor_msgs::msg::dds_::LaserEcho_</dataType>
+    <topic profile_name="weather_station/humidity__t">
+        <name>rt/weather_station/humidity</name>
+        <dataType>std_msgs::msg::dds_::Float32_</dataType>
     </topic>
 
-    <data_writer profile_name="drone/publisher__dw">
+    <data_writer profile_name="weather_station/humidity__dw">
         <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
         <qos>
           <reliability>
-            <kind>BEST_EFFORT</kind>
+            <kind>RELIABLE</kind>
           </reliability>
         </qos>
         <topic>
             <kind>NO_KEY</kind>
-            <name>rt/drone/publisher</name>
-            <dataType>sensor_msgs::msg::dds_::LaserEcho_</dataType>
+            <name>rt/weather_station/humidity</name>
+            <dataType>std_msgs::msg::dds_::Float32_</dataType>
+        </topic>
+    </data_writer>
+
+    <topic profile_name="weather_station/temperature__t">
+        <name>rt/weather_station/temperature</name>
+        <dataType>std_msgs::msg::dds_::Float32_</dataType>
+    </topic>
+
+    <data_writer profile_name="weather_station/temperature__dw">
+        <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+        <qos>
+          <reliability>
+            <kind>RELIABLE</kind>
+          </reliability>
+        </qos>
+        <topic>
+            <kind>NO_KEY</kind>
+            <name>rt/weather_station/temperature</name>
+            <dataType>std_msgs::msg::dds_::Float32_</dataType>
         </topic>
     </data_writer>
 
@@ -40,7 +55,7 @@
         <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
         <qos>
           <reliability>
-            <kind>BEST_EFFORT</kind>
+            <kind>RELIABLE</kind>
           </reliability>
         </qos>
         <topic>
@@ -49,9 +64,6 @@
             <dataType>geometry_msgs::msg::dds_::Point32_</dataType>
         </topic>
     </data_writer>
-
-
-
 
      <topic profile_name="drone/attitude__t">
         <name>rt/drone/attitude</name>
@@ -62,7 +74,7 @@
         <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
         <qos>
           <reliability>
-            <kind>BEST_EFFORT</kind>
+            <kind>RELIABLE</kind>
           </reliability>
         </qos>
         <topic>

@@ -1,1 +1,12 @@
 dockerfile/.env/variables.env
+crazyflie-clients-python
+crazyflie-lib-python
+crazyflie2-nrf-firmware
+multi-git-status
+uros_ws
+.devcontainer
+.vscode
+uros_ws_workingstate
+crazyradio-firmware
+crazyflie2-stm-bootloader
+crazyflie-firmware
