@@ -19,7 +19,7 @@ An *MAV (Micro Aerial Vehicle)* overflies a given area commanded by a *Flight Op
 The *Flight Operator* shall command the *MAV* toward the *Remote Sensors* and once positioned over them, the *MAV* shall establish a connection with the *Remote Sensors* in order to gather its data.
 Finally, the *Fligh Operator* shall command the *MAV* toward the home position.
 
-![](https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/master/assets/images/drone_use-case_diagram.png)
+![](https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/dashing/assets/images/drone_use-case_diagram.png)
 
 ## Actors & Topics
 
