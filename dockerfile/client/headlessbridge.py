@@ -25,7 +25,7 @@ class CrazyradioBridge():
         """Initialize the headless client and libraries"""
         self._serial = serialport
 
-        self.link = cflib.crtp.get_link_driver(link_uri, self._link_quality, None)
+        self.link = cflib.crtp.get_link_driver(link_uri, None, None)
         self.link._radio_manager._radios[0].radio.set_power(0)
 
         self.is_connected = True
@@ -38,7 +38,6 @@ class CrazyradioBridge():
         self.cfthread = threading.Thread(target=self._cf_listener)
         self.cfthread.start()
 
-
     def _link_quality(self,q):
         self._q.append(q)
         if len(self._q) > 10:
@@ -47,7 +46,7 @@ class CrazyradioBridge():
 
     def _serial_listener(self):
         while self.is_connected:
-            data = self._serial.read(size=30)
+            data = self._serial.read(size=29)
             if(data):
                 pk = CRTPPacket()
                 pk.port = CRTP_PORT_MICROROS
@@ -63,7 +62,7 @@ class CrazyradioBridge():
             self._serial.flush()
 
 def main():
-    # Creating a soca bridge
+    # Creating a socat bridge
     serial_dev = '/dev/ttyS11'
     serial_dev_agent = '/dev/ttyS10'
     socat_process = subprocess.Popen(["socat", "PTY,link=/dev/ttyS10", "PTY,link=" + serial_dev])
@@ -78,7 +77,7 @@ def main():
 
     # Configure radio link
     cflib.crtp.radiodriver.set_retries_before_disconnect(-1)
-    cflib.crtp.radiodriver.set_retries(100)
+    cflib.crtp.radiodriver.set_retries(1)
     cflib.crtp.init_drivers(enable_debug_driver=False)
     link_uri = "radio://0/30/2M"
 
