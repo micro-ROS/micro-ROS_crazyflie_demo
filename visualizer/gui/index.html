@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <title>micro-ROS Crazyflie demo</title>
+    <script src="./d3.min.js" integrity="sha512-FHsFVKQ/T1KWJDGSbrUhTJyS1ph3eRrxI228ND0EGaEp6v4a/vGwPWd3Dtd/+9cI7ccofZvl/wulICEurHN1pg=="></script>
+    <script src="./c3.min.js" integrity="sha512-bW79RVtvrrTS2QzmDsJeh62Nt4b/RjYlYvi2iEmkXPhzzbXMx69JT/zHgiGcL1Tk5nkLMTF6xkEUuynTkdC9PQ==" ></script>
+    <link rel="stylesheet" href="./c3.min.css" integrity="sha512-cznfNokevSG7QPA5dZepud8taylLdvgr0lDqw/FEZIhluFsSwyvS81CMnRdrNSKwbsmc43LtRd2/WMQV+Z85AQ==" />
+    <link rel="stylesheet" href="./index.css"/>
+
+  </head>
+  <body>
+    <div id="header">
+      <img id="imgepros" src="./logo.png" height="80px">
+      <img id="imguros" src="./microros.png" height="80px">
+    </div>
+
+    <div id="name">
+      <div id="title"><h3>micro-ROS Crazyflie demo</h3></div></br>
+      <div id="connection">Not connected</div>
+    </div>
+  
+    <!-- <h1>micro-ROS Crazyflie demo</h1>
+    We are using Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>. -->
+
+    <div id="chart"></div>
+
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+#header{
+    display: flex;
+    margin-bottom: 30px;
+    justify-content: space-between;
+}
+
+#name{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#connection{
+    /* display: flex;
+    justify-content: center; */
+    color: #d9534f;
+    font-weight: bold;
+}
+
+#title{
+    width: 100%;
+}
