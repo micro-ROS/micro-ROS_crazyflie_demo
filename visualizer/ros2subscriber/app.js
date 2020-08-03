@@ -6,17 +6,17 @@ rclnodejs.init().then(() => {
     const node = rclnodejs.createNode('subscription_example_node');
 
     var connected = []
-    node.createSubscription('std_msgs/msg/Int32', '/weather_station/temperature', msg => {
-      // console.log(`Received message: ${typeof msg}`, msg);
+    node.createSubscription('std_msgs/msg/Float32', '/weather_station/humidity', msg => {
+      console.log(`Received humidity: ${typeof msg}`, msg);
       connected.forEach(e => {
-        e.send(JSON.stringify({"temperature":msg.data}))
+        e.send(JSON.stringify({"humidity":msg.data}))
       })
     });
 
-    node.createSubscription('std_msgs/msg/Int32', '/weather_station/humidity', msg => {
-      // console.log(`Received message: ${typeof msg}`, msg);
+    node.createSubscription('std_msgs/msg/Float32', '/weather_station/temperature', msg => {
+      console.log(`Received message: ${typeof msg}`, msg);
       connected.forEach(e => {
-        e.send(JSON.stringify({"humidity":msg.data}))
+        e.send(JSON.stringify({"temperature":msg.data}))
       })
     });
   
