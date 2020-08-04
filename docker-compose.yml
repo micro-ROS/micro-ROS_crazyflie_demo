@@ -45,3 +45,11 @@ services:
         environment:
             DISPLAY: unix:0
         network_mode: "host"
+    cf_visualizer:
+        build: ./dockerfile/visualizer
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+        privileged: true
+        environment:
+            DISPLAY: unix:0
+        network_mode: "host"
