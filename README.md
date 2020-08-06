@@ -75,12 +75,12 @@ The following is a list of the hardware needed to reproduce this demo:
 
 1. Run the builder Docker:
 ```bash
-docker-compose run cf_builder
+docker-compose run --rm cf_builder
 ```
 
 2. Build the micro-ROS firmware inside the Docker:
 ```bash
-ros2 run micro_ros_setup configure_firmware.sh crazyflie_position_publisher_reconnection
+ros2 run micro_ros_setup configure_firmware.sh crazyflie_demo
 ros2 run micro_ros_setup build_firmware.sh
 ```
 
@@ -97,9 +97,10 @@ To start the application just three steps are needed:
 
 1. Install and connect the Crazyradio PA (it require [setting](https://github.com/bitcraze/crazyflie-lib-python#platform-notes) udev permissions).
 
-2. Up the Docker Compose:
+2. Up the Docker Compose. Remember to give permissions to Docker to access the X display server:
 
 ```bash
+xhost +
 docker-compose up -d
 ```
 3. [Connect](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/#config-client) to the Crazyflie.

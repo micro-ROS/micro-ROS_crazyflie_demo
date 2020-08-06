@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-python3 micro-ROS-brigde.py &
+python3 uros_cf_bridge_joystick.py &
 while [ ! -f "/.env/variables.env" ]; do
     sleep 2
 done
-exec socat TCP-LISTEN:1189,reuseaddr,fork FILE:/.env/variables.env
+
+socat TCP-LISTEN:1189,reuseaddr,fork FILE:/.env/variables.env

@@ -1,7 +1,7 @@
-FROM ros:dashing
+FROM ros:foxy
 
 RUN apt update \
-&&  apt install -y ros-${ROS_DISTRO}-rqt* \
+&&  apt-get install -y ros-${ROS_DISTRO}-rqt* \
 &&  rm -rf /var/lib/app/lists/*
 
 COPY ./gcs.perspective ./

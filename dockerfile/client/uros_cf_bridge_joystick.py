@@ -35,11 +35,11 @@ class CrazyflieBridgedController():
 
         # Callbacks
         self._cf.connected.add_callback(lambda msg: print("Connected to " + msg))
-        self._cf.disconnected.add_callback(self._disconnected)  
+        self._cf.disconnected.add_callback(self._disconnected)
         self._cf.connection_failed.add_callback(self._connection_failed)
         self._cf.console.receivedChar.add_callback(self._console_char)
         self._cf.packet_received.add_callback(self._data_received)
-        
+
         # Controller callback
         if self._jr:
             self._jr.input_updated.add_callback(self._cf.commander.send_setpoint)

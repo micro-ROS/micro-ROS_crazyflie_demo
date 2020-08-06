@@ -9,19 +9,19 @@ services:
         build: ./dockerfile/client
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
-            - /dev/bus/usb:/dev/bus/usb
-            - /dev/pts:/dev/pts
+            - /dev:/dev
         privileged: true
+        ports:
+            - 1189:1189/tcp
+            - 1189:1189/udp
         environment:
             DISPLAY: unix:0
-        network_mode: "host"
-        ports:
-            - 1189:1189
     cf_agent:
         build: ./dockerfile/agent
         volumes:
-            - /dev/pts:/dev/pts
+            - /dev:/dev
         network_mode: "host"
+        privileged: true
         depends_on:
             - cf_client
     cf_translator:

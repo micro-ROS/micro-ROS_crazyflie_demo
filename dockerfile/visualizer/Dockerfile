@@ -1,7 +1,7 @@
 FROM ros:foxy
 
 # Avoid warnings and ask users for manual configuration parameters
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND noninteractive
 
 ARG USERNAME=cf_visualizer
 ARG USER_UID=1000
@@ -33,11 +33,14 @@ COPY gui ./gui
 
 # Install dependencies using npm
 RUN . /opt/ros/$ROS_DISTRO/local_setup.sh && \
+    npm config set registry http://registry.npmjs.org && \
     cd ros2subscriber && npm install && \
     cd ../gui && npm install
 
 # Change to cf_visualizer username
 USER $USERNAME
+
+ENV DEBIAN_FRONTEND dialog
 
 COPY ./entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
