@@ -91,19 +91,63 @@ ros2 run micro_ros_setup build_firmware.sh
 ros2 run micro_ros_setup flash_firmware.sh
 ```
 
+## How to prepare the Raspberry Pi applications?
+
+To compile the required applications, so to say the specific Micro-ROS agent and client applications to publish the sensors data:
+
+1. Launch an instance of the *micro-ROS/base* docker container:
+```bash
+docker run -ti --rm microros/base:foxy
+```
+
+2. Create a *raspbian* workspace inside the container:
+```bash
+root@microros:/uros_ws# ros2 run micro_ros_setup create_firmware_ws.sh raspbian buster_v8
+```
+
+3. On a first stage, build the `weather_agent` executable:
+```bash
+root@microros:/uros_ws# ros2 run micro_ros_setup configure_firmware.sh weather_agent
+root@microros:/uros_ws# ros2 run micro_ros_setup build_firmware.sh
+```
+
+4. The resulting binary file is located under `/uros_ws/firmware/bin`. Copy it to the RPi via ssh's `scp`.
+
+5. Perform steps 3 and 4, but replacing *weather_agent* application for *weather_publisher*.
+
+6. Copy the Python 3 script `uros_cf_bridge_no_joystick.py` into the RPi, located in this repository under `dockerfile/client` folder.
+
+7. If your Raspberry Pi does not have the I2C port enabled, you will need to do it before connecting the Sparkfun weather station.
+   This can be easily achieved executing `sudo raspi-config` and opening up the I2C port.
+   After that, connect the weather station board, taking into consideration the pin layout:
+
+```
+        3.3Vcc  [1][2]
+        I2C SDA [3][4]
+        I2C SCL [5][6] GND
+```
+
 ## How to use?
 
 To start the application just three steps are needed:
 
 1. Install and connect the Crazyradio PA (it require [setting](https://github.com/bitcraze/crazyflie-lib-python#platform-notes) udev permissions).
 
-2. Up the Docker Compose. Remember to give permissions to Docker to access the X display server:
+2. Connect a Crazyradio antenna to the RPi. On three different ssh terminals attached to the Raspberry Pi, execute the following commands:
+
+```bash
+pi@raspberry:~/$ python3 uros_cf_bridge_joystick.py
+pi@raspberry:~/$ sudo ./weather_agent /dev/ttyS10
+pi@raspberry:~/$ ./weather_publisher
+```
+
+3. Up the Docker Compose. Remember to give permissions to Docker to access the X display server:
 
 ```bash
 xhost +
 docker-compose up -d
 ```
-3. [Connect](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/#config-client) to the Crazyflie.
+4. [Connect](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyflie-2-x/#config-client) to the Crazyflie.
 
 To stop the application just down the Docker Compose:
 
