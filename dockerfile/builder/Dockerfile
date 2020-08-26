@@ -1,7 +1,7 @@
-FROM microros/base:dashing
+FROM microros/base:foxy
 
 RUN . /opt/ros/$ROS_DISTRO/setup.sh \
-&&  . ./install/setup.sh \
+&&  . install/setup.sh \
 &&  apt update \
 &&  apt install -y dfu-util \
 &&  ros2 run micro_ros_setup create_firmware_ws.sh freertos crazyflie21 \
