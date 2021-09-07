@@ -6,23 +6,22 @@ import os
 import signal
 import sys
 import serial
+import pty
 import threading
 import time
 import subprocess
 
-import cfclient.utils
 import cflib.crtp
-from cfclient.utils.input import JoystickReader
 from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crazyflie import Crazyflie
 
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+import argparse
 
-CRTP_PORT_MICROROS = 9
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 class CrazyflieBridgedController():
 
-    def __init__(self, link_uri, serialport, jr, xmode=True):
+    def __init__(self, link_uri, radio_port, serialport, jr, xmode=True):
         """Initialize the headless client and libraries"""
         self._cf = Crazyflie()
         self._jr = jr
@@ -30,6 +29,7 @@ class CrazyflieBridgedController():
 
         self._cf.commander.set_client_xmode(xmode)
         self._cf.open_link(link_uri)
+        self._port = radio_port
         self.is_connected = True
         self._console = ""
 
@@ -58,12 +58,12 @@ class CrazyflieBridgedController():
             data = self._serial.read(size=30)
             if(data):
                 pk = CRTPPacket()
-                pk.port = CRTP_PORT_MICROROS
+                pk.port = self._port
                 pk.data = data
                 self._cf.send_packet(pk)
 
     def _data_received(self, pk):
-        if pk.port == CRTP_PORT_MICROROS:
+        if pk.port == self._port:
             self._serial.write(pk.data)
             self._serial.flush()
 
@@ -78,50 +78,66 @@ class CrazyflieBridgedController():
         # self._cf.open_link(link_uri)
         self.is_connected = False
 
+    
 
 def main():
-    # Creating a soca bridge
-    serial_dev = '/dev/ttyS11'
-    serial_dev_agent = '/dev/ttyS10'
-    socat_process = subprocess.Popen(["socat", "PTY,link=/dev/ttyS10", "PTY,link=" + serial_dev])
-    time.sleep(1)
-    print("Use " + serial_dev_agent + " for micro-ROS agent connection")
+    parser = argparse.ArgumentParser("")
+    parser.add_argument("--channel", help="Crazyradio configured channel", type=str, default="65")
+    parser.add_argument("--port", help="Crazyradio configured port", type=int, default=10)
+    parser.add_argument("--controller", help="Use controller to command crazyflie", action='store_true')
+    args = parser.parse_args()
+
+    master, slave = pty.openpty()
+    m_name = os.ttyname(master)
+    s_name = os.ttyname(slave)
+
+    # Save serial port name to file
+    with open("/tmp/uros_port.log", 'w+') as file:
+        file.write(s_name)
+        print("Using " + s_name + " for micro-ROS agent connection")
 
     # Set logging level
     logging.basicConfig(level=logging.INFO)
 
     # Open serial port
-    serialport = serial.Serial(serial_dev, baudrate=115200, timeout=0.1)
+    serialport = serial.Serial(s_name, baudrate=115200, timeout=1)
+    serialport.fd = master
 
-    # Retrieve controller
-    jr = JoystickReader(do_device_discovery=False)
-    available_devices = jr.available_devices()
-    if len(available_devices):
-        used_device = available_devices[0]
-        print("Using input device: " + str(used_device))
-        jr.device_error.add_callback(lambda msg: print("Input device error: " + str(msg)))
-        jr.start_input(used_device.name)
-        jr.set_input_map(used_device.name, "PS3_Mode_1")
+    # Retrieve controller if configured
+    if args.controller:
+        from cfclient.utils.input import JoystickReader
+
+        jr = JoystickReader(do_device_discovery=False)
+        available_devices = jr.available_devices()
+        if len(available_devices):
+            used_device = available_devices[0]
+            print("Using input device: " + str(used_device))
+            jr.device_error.add_callback(lambda msg: print("Input device error: " + str(msg)))
+            jr.start_input(used_device.name)
+            jr.set_input_map(used_device.name, "PS3_Mode_1")
+        else:
+            print("No input device detected")
+            jr = None
     else:
-        used_device = None
-        print("Using no input device")
+        jr = None
 
     # Configure radio link
     cflib.crtp.radiodriver.set_retries_before_disconnect(-1)
     cflib.crtp.radiodriver.set_retries(100)
     cflib.crtp.init_drivers(enable_debug_driver=False)
-    link_uri = "radio://0/65/2M"
+    link_uri = "radio://0/{}/2M".format(args.channel)
+    radio_port = args.port
+
+    print("Connecting to Crazyflie using {}, with port {}".format(link_uri, radio_port))
 
     try:
         while True:
-            cf = CrazyflieBridgedController(link_uri, serialport, jr if used_device else None)
+            cf = CrazyflieBridgedController(link_uri, radio_port, serialport, jr)
             while cf.is_connected:
                 time.sleep(0.1)
             print("Disconected from: " + str(link_uri))
     except KeyboardInterrupt:
         pass
-
-    os.killpg(os.getpgid(socat_process.pid), signal.SIGTERM)
 
 
 if __name__ == "__main__":
