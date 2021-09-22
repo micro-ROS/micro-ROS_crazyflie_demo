@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-python3 uros_cf_bridge.py --controller &
+python3 uros_cf_bridge.py &
 while [ ! -f "/.env/variables.env" ]; do
     sleep 2
 done

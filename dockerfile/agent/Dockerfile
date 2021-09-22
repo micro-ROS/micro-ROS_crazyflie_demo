@@ -1,6 +1,6 @@
 FROM microros/micro-ros-agent:galactic
 
-ENV UROS_FILE /tmp/uros_log.log
+ENV UROS_FILE /tmp/uros_port.log
 
 RUN apt update && apt install -y netcat socat
 

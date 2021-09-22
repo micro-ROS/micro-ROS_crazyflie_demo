@@ -9,6 +9,7 @@ services:
         build: ./dockerfile/client
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
+            - /tmp:/tmp:rw
             - /dev:/dev
         privileged: true
         ports:
@@ -19,6 +20,7 @@ services:
     cf_agent:
         build: ./dockerfile/agent
         volumes:
+            - /tmp:/tmp:ro
             - /dev:/dev
         network_mode: "host"
         privileged: true

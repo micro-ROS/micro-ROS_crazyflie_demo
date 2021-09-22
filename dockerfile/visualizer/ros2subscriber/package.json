@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "rclnodejs": "^0.15.0",
+    "rclnodejs": "^0.20.0",
     "ws": "^7.3.1"
   },
   "scripts": {
