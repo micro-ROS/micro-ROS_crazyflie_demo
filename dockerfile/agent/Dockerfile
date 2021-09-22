@@ -1,14 +1,13 @@
-FROM microros/micro-ros-agent:foxy
+FROM microros/micro-ros-agent:galactic
 
-ENV SERIAL_DEV /dev/ttyS10
+ENV UROS_FILE /tmp/uros_log.log
 
 RUN apt update && apt install -y netcat socat
 
-RUN echo "SERIAL_DEV=$SERIAL_DEV" > /serial_dev
+RUN echo "UROS_FILE=$UROS_FILE" > /uros_file
 
 COPY ./entrypoint.sh /
 COPY ./wait-for /
-COPY ./agent.refs /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]

@@ -1,4 +1,4 @@
-FROM ros:foxy
+FROM ros:galactic
 
 # Avoid warnings and ask users for manual configuration parameters
 ENV DEBIAN_FRONTEND noninteractive

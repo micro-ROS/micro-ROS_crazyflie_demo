@@ -1,4 +1,4 @@
-FROM ros:foxy
+FROM ros:galactic
 
 RUN apt update \
 &&  apt-get install -y ros-${ROS_DISTRO}-rqt* \
