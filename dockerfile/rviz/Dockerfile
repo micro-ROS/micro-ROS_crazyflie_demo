@@ -1,9 +1,9 @@
-FROM ros:galactic
+FROM ros:foxy
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt update \
-&&  apt install -y ros-galactic-desktop \
+&&  apt install -y ros-foxy-desktop \
 &&  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /crazyflie

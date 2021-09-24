@@ -40,8 +40,11 @@ class AttitudeToVel(Node):
         self.lastPose = Point32()
         self.posearray = []
 
-        self.sub_drone_att = self.create_subscription(Point32, "/drone/attitude", self.drone_att_callback, QoSProfile(depth=1))
-        self.sub_drone_pos = self.create_subscription(Point32, "/drone/odometry", self.drone_odom_callback, QoSProfile(depth=1))
+        qos_profile = QoSProfile(depth=1)
+        qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
+
+        self.sub_drone_att = self.create_subscription(Point32, "/drone/attitude", self.drone_att_callback, qos_profile)
+        self.sub_drone_pos = self.create_subscription(Point32, "/drone/odometry", self.drone_odom_callback, qos_profile)
         self.pub_tf = self.create_publisher(TFMessage, "/tf", QoSProfile(depth=1))
         self.pub_vel = self.create_publisher(Twist, "/cmd_vel", QoSProfile(depth=1))
         self.pub_posearray = self.create_publisher(Path, "/drone/path", QoSProfile(depth=1))
@@ -54,7 +57,6 @@ class AttitudeToVel(Node):
         qw = math.cos(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
         return [qx, qy, qz, qw]
 
-    
     def drone_att_callback(self, rcv):
         print("POSE: " +  str(rcv))
         self.lastPose = rcv
