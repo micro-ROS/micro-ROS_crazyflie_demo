@@ -16,29 +16,27 @@ Each one of the aforementioned characteristics will be used around this demo.
 
 An *MAV (Micro Aerial Vehicle)* overflies a given area commanded by a *Flight Operator* through a *GCS (Ground Control Station)*.
 *Remote Sensors*, distributed over the area, takes environmental measures (temperature, pressure and humidity).
-The *Flight Operator* shall command the *MAV* toward the *Remote Sensors* and once positioned over them, the *MAV* shall establish a connection with the *Remote Sensors* in order to gather its data.
+The *Flight Operator* shall command the *MAV* toward the *Remote Sensors* and once positioned near them, the *MAV* shall establish a connection with the *Remote Sensors* in order to gather its data.
 Finally, the *Fligh Operator* shall command the *MAV* toward the home position.
 
 ![](https://raw.githubusercontent.com/micro-ROS/micro-ROS_crazyflie_demo/dashing/assets/images/drone_use-case_diagram.png)
 
 ## Actors & Topics
 
-In this demo there are three different micro-ROS actors (*MAV*, *GCS* and *Remote Sensors*) which publish/subscribe to/from six topics:
+In this demo there are three different micro-ROS actors (*MAV*, *GCS* and *Remote Sensors*) which publish/subscribe to/from four topics:
 
-* `/drone/odometry`: *MAV*'s odometry.
-* `/drone/attitude`: *MAV*'s attitude.
-* `/flight/cmd`: flight commands.
+* `/drone/pose`: *MAV*'s actual pose.
+* `/drone/tf`: *MAV*'s transform (tf2).
 * `/sensor/temperature`: *Remote Sensors*' temperature.
-* `/sensor/pressure`: *Remote Sensors*' pressure.
 * `/sensor/humidity`: *Remote Sensors*' humidity.
 
 ### MAV
 
-A [Crazyflie 2.1](https://www.bitcraze.io/crazyflie-2-1/) running a micro-ROS-Client application which is in charge of publishing its attitude and odometry, and subscribing to flight commands and *Remote Sensor*' data.
+A [Crazyflie 2.1](https://www.bitcraze.io/crazyflie-2-1/) running a micro-ROS-Client application which is in charge of publishing its position and orientation. It will also work as a bridge for *Remote Sensor*' data.
 
 ### GCS
 
-A general-purpose computer running a micro-ROS-Agent application which is in charge of publishing flight commands, and subscribing to *MAV*'s attitude and odometry data.
+A general-purpose computer running a micro-ROS-Agent application which is in charge of controlling the *MAV*'s flight and receive all published data.
 
 ### Remote Sensors
 
@@ -95,29 +93,30 @@ ros2 run micro_ros_setup flash_firmware.sh
 
 To compile the required applications, so to say the specific Micro-ROS agent and client applications to publish the sensors data:
 
-1. Launch an instance of the *micro-ROS/base* docker container:
+1. Launch an instance of the *micro-ROS/base* docker container and update the repositories:
 ```bash
-docker run -ti --rm microros/base:foxy
+docker run -ti --rm microros/base:galactic
+apt update
 ```
 
 2. Create a *raspbian* workspace inside the container:
 ```bash
-root@microros:/uros_ws# ros2 run micro_ros_setup create_firmware_ws.sh raspbian buster_v8
+ros2 run micro_ros_setup create_firmware_ws.sh raspbian buster_v8
 ```
 
-3. On a first stage, build the `weather_agent` executable:
+1. On a first stage, build the `weather_agent` executable:
 ```bash
-root@microros:/uros_ws# ros2 run micro_ros_setup configure_firmware.sh weather_agent
-root@microros:/uros_ws# ros2 run micro_ros_setup build_firmware.sh
+ros2 run micro_ros_setup configure_firmware.sh weather_agent
+ros2 run micro_ros_setup build_firmware.sh
 ```
 
-4. The resulting binary file is located under `/uros_ws/firmware/bin`. Copy it to the RPi via ssh's `scp`.
+1. The resulting binary file is located under `/uros_ws/firmware/bin`. Copy it to the RPi via ssh's `scp`.
 
-5. Perform steps 3 and 4, but replacing *weather_agent* application for *weather_publisher*.
+2. Perform steps 3 and 4, but replacing *weather_agent* application for *weather_publisher*.
 
-6. Copy the Python 3 script `uros_cf_bridge_no_joystick.py` into the RPi, located in this repository under `dockerfile/client` folder.
+3. Copy the Python 3 script `uros_cf_bridge.py` into the RPi, located in this repository under `dockerfile/client` folder.
 
-7. If your Raspberry Pi does not have the I2C port enabled, you will need to do it before connecting the Sparkfun weather station.
+4. If your Raspberry Pi does not have the I2C port enabled, you will need to do it before connecting the Sparkfun weather station.
    This can be easily achieved executing `sudo raspi-config` and opening up the I2C port.
    After that, connect the weather station board, taking into consideration the pin layout:
 
@@ -133,12 +132,12 @@ To start the application just three steps are needed:
 
 1. Install and connect the Crazyradio PA (it require [setting](https://github.com/bitcraze/crazyflie-lib-python#platform-notes) udev permissions).
 
-2. Connect a Crazyradio antenna to the RPi. On three different ssh terminals attached to the Raspberry Pi, execute the following commands:
+2. Connect a Crazyradio antenna to the RPi. On three different ssh terminals attached to the Raspberry Pi, execute the following commands in order:
 
 ```bash
-pi@raspberry:~/$ python3 uros_cf_bridge_joystick.py
-pi@raspberry:~/$ sudo ./weather_agent /dev/ttyS10
-pi@raspberry:~/$ ./weather_publisher
+python3 uros_cf_bridge.py --channel 30 --port 10
+./weather_agent
+./weather_publisher
 ```
 
 3. Up the Docker Compose. Remember to give permissions to Docker to access the X display server:
@@ -154,6 +153,28 @@ To stop the application just down the Docker Compose:
 ```bash
 docker-compose down
 ```
+
+## Communication with micro-ROS agent
+
+1. To communicate a custom crazyflie app with a micro-ROS Agent, use the provided bridge script:
+
+    ```bash
+    python3 uros_cf_bridge.py --channel 65 --port 9 --controller
+    ```
+
+    *If needed, modify the channel and port arguments acordingly to the configured transport arguments, example: [link](https://github.com/micro-ROS/freertos_apps/blob/galactic/apps/crazyflie_position_publisher/app.c#L57)*
+
+2. To start the agent:
+
+- Using ros2 run:
+    ```bash
+    ros2 run micro_ros_agent micro_ros_agent serial -f /tmp/uros/port.log -v6
+    ```
+
+- Using dockerized agent:
+    ```bash
+    docker run -it --rm -v /dev:/dev -v /tmp/uros/port.log:/tmp/uros/port.log --privileged microros/micro-ros-agent:galactic serial -f /tmp/uros/port.log -v6
+    ```
 
 ## Purpose of the Project
 

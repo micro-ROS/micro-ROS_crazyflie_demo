@@ -8,6 +8,6 @@ source "/uros_ws/install/setup.bash"
 socat TCP:localhost:1189 OPEN:/variables.env,creat
 
 source /variables.env
-source /serial_dev
+source /uros_file
 
-ros2 run micro_ros_agent micro_ros_agent serial --dev $SERIAL_DEV --verbose 6 --refs /agent.refs
+ros2 run micro_ros_agent micro_ros_agent serial -f $UROS_FILE

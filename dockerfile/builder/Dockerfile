@@ -1,4 +1,4 @@
-FROM microros/base:foxy
+FROM microros/base:galactic
 
 RUN . /opt/ros/$ROS_DISTRO/setup.sh \
 &&  . install/setup.sh \

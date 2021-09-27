@@ -27,8 +27,6 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/config/', ['config/crazyflie.rviz']),
-        ('share/' + package_name + '/config/', ['config/crazyflie_attitude.rviz']),
-        ('share/' + package_name + '/launch/', ['launch/launch_drone_attitude.launch.py']),
         ('share/' + package_name + '/launch/', ['launch/launch_drone_position.launch.py']),
     ],
     install_requires=['setuptools'],
@@ -46,10 +44,4 @@ setup(
     ],
     license='Apache 2.0',
     tests_require=['pytest'],
-    entry_points={
-        'console_scripts': [
-            'attitude_to_vel = attitude_to_vel.attitude_to_vel:main',
-            'simple_navigation = simple_navigation.simple_navigation:main',
-        ],
-    },
 )

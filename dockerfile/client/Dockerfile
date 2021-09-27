@@ -34,5 +34,5 @@ RUN mkdir /.env
 ENV DEBIAN_FRONTEND dialog
 
 COPY ./entrypoint.sh /
-COPY ./uros_cf_bridge_joystick.py /
+COPY ./uros_cf_bridge.py /
 ENTRYPOINT ["/entrypoint.sh"]

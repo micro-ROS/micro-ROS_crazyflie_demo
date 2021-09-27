@@ -23,7 +23,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     urdfcrazyflie = os.path.join(get_package_share_directory('micro-ros_crazyflie_demo_robot-description'),
                     'urdf', 'crazyflie2.xacro')
-    
+
     rviz_config_crazyflie = os.path.join(get_package_share_directory('micro-ros_crazyflie_demo_remote'),
                                'config', 'crazyflie.rviz')
 
@@ -31,10 +31,10 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='robot_state_publisher',
-            node_executable='robot_state_publisher',
+            executable='robot_state_publisher',
             output='screen', arguments=[urdfcrazyflie]),
         Node(
             package='rviz2',
-            node_executable='rviz2',
-            arguments=['-d', rviz_config_crazyflie])    
+            executable='rviz2',
+            arguments=['-d', rviz_config_crazyflie])
 ])
