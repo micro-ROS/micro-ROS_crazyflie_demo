@@ -16,6 +16,8 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 
 # Configure apt and install packages
 RUN apt-get update \
+    &&  apt install -y ros-$ROS_DISTRO-rmw-fastrtps-cpp \
+    &&  apt remove -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
     && apt-get -y install --no-install-recommends git nodejs npm libnss3-dev \
     libatk-adaptor libgtk2.0-0 libgtk-3-0 libgbm-dev libxss1 libasound2 wget \
     libx11* libxcb-dri*
@@ -41,6 +43,9 @@ RUN . /opt/ros/$ROS_DISTRO/local_setup.sh && \
 USER $USERNAME
 
 ENV DEBIAN_FRONTEND dialog
+COPY disable_fastdds_shm.xml /tmp/
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/tmp/disable_fastdds_shm.xml
+ENV RMW_IMPLEMENTATION rmw_fastrtps_cpp
 
 COPY ./entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]

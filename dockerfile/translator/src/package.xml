@@ -16,9 +16,6 @@
   <depend>tf2_ros</depend>
   <depend>geometry_msgs</depend>
   <depend>visualization_msgs</depend>
-  <!-- <exec_depend>micro-ros_crazyflie_demo_robot-description</exec_depend> -->
-  <exec_depend>teleop_twist_joy</exec_depend>
-  <exec_depend>teleop_twist_keyboard</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -3,13 +3,11 @@ Headless client for the Crazyflie.
 """
 import logging
 import os
-import signal
-import sys
 import serial
 import pty
 import threading
 import time
-import subprocess
+from pathlib import Path
 
 import cflib.crtp
 from cflib.crtp.crtpstack import CRTPPacket
@@ -137,7 +135,7 @@ class CrazyflieBridge():
                 self._serial.write(pk.data)
                 self._serial.flush()
                 #print("Got data from crazyflie: len {}, data {}".format(len(pk.data), pk.data))
-    
+
 def main():
     parser = argparse.ArgumentParser("")
     parser.add_argument("--channel", help="Crazyradio configured channel", type=str, default="65")
@@ -150,7 +148,9 @@ def main():
     s_name = os.ttyname(slave)
 
     # Save serial port name to file
-    with open("/tmp/uros_port.log", 'w+') as file:
+    Path("/tmp/uros").mkdir(parents=True, exist_ok=True)
+
+    with open("/tmp/uros/port.log", 'w+') as file:
         file.write(s_name)
         print("Using " + s_name + " for micro-ROS agent connection")
 

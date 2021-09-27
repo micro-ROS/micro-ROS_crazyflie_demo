@@ -10,4 +10,4 @@ socat TCP:localhost:1189 OPEN:/variables.env,creat
 source /variables.env
 source /uros_file
 
-ros2 run micro_ros_agent micro_ros_agent serial -f $UROS_FILE -v6
+ros2 run micro_ros_agent micro_ros_agent serial -f $UROS_FILE

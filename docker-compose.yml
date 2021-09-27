@@ -9,7 +9,7 @@ services:
         build: ./dockerfile/client
         volumes:
             - /tmp/.X11-unix:/tmp/.X11-unix
-            - /tmp:/tmp:rw
+            - /tmp/uros:/tmp/uros
             - /dev:/dev
         privileged: true
         ports:
@@ -20,7 +20,7 @@ services:
     cf_agent:
         build: ./dockerfile/agent
         volumes:
-            - /tmp:/tmp:ro
+            - /tmp/uros:/tmp/uros
             - /dev:/dev
         network_mode: "host"
         privileged: true
@@ -39,14 +39,6 @@ services:
         network_mode: "host"
         depends_on:
             - cf_translator
-    cf_gcs:
-        build: ./dockerfile/gcs
-        volumes:
-            - /tmp/.X11-unix:/tmp/.X11-unix
-        privileged: true
-        environment:
-            DISPLAY: unix:0
-        network_mode: "host"
     cf_visualizer:
         build: ./dockerfile/visualizer
         volumes:
