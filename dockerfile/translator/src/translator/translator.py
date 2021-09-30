@@ -34,9 +34,8 @@ class AttitudeToVel(Node):
         qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
 
         self.sub_drone_tf = self.create_subscription(TransformStamped, "/drone/tf", self.drone_tf_callback, qos_profile)
-        self.sub_drone_pose = self.create_subscription(PoseStamped, "/drone/pose", self.drone_pose_callback, qos_profile)
         self.pub_tf = self.create_publisher(TFMessage, "/tf", QoSProfile(depth=1))
-        self.pub_posearray = self.create_publisher(Path, "/drone/path", QoSProfile(depth=1))
+        self.pub_path = self.create_publisher(Path, "/drone/path", QoSProfile(depth=1))
 
     def drone_tf_callback(self, tf):
         # Wrap and publish TF
@@ -44,7 +43,15 @@ class AttitudeToVel(Node):
         tfmsg.transforms = [tf]
         self.pub_tf.publish(tfmsg)
 
-    def drone_pose_callback(self, pose):
+        # Get current pose from transform
+        pose = PoseStamped()
+        pose.header.frame_id = "/map"
+        pose.header.stamp = Clock().now().to_msg()
+
+        pose.pose.position.x = tf.transform.translation.x
+        pose.pose.position.y = tf.transform.translation.y
+        pose.pose.position.z = tf.transform.translation.z
+
         # Publish Rviz Path
         msgpath = Path()
         msgpath.header.frame_id = "/map"
@@ -55,7 +62,7 @@ class AttitudeToVel(Node):
             self.posearray = self.posearray[1:]
 
         msgpath.poses = self.posearray
-        self.pub_posearray.publish(msgpath)
+        self.pub_path.publish(msgpath)
 
 
 def main(args=None):

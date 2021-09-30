@@ -23,9 +23,8 @@ Finally, the *Fligh Operator* shall command the *MAV* toward the home position.
 
 ## Actors & Topics
 
-In this demo there are three different micro-ROS actors (*MAV*, *GCS* and *Remote Sensors*) which publish/subscribe to/from four topics:
+In this demo there are three different micro-ROS actors (*MAV*, *GCS* and *Remote Sensors*) which publish/subscribe to/from three topics:
 
-* `/drone/pose`: *MAV*'s actual pose.
 * `/drone/tf`: *MAV*'s transform (tf2).
 * `/sensor/temperature`: *Remote Sensors*' temperature.
 * `/sensor/humidity`: *Remote Sensors*' humidity.
