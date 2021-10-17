@@ -14,11 +14,16 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 
+# Update nodejs version
+RUN apt-get update \
+    && apt install curl \
+    && curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh \
+  
 # Configure apt and install packages
 RUN apt-get update \
     &&  apt install -y ros-$ROS_DISTRO-rmw-fastrtps-cpp \
     &&  apt remove -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
-    && apt-get -y install --no-install-recommends git nodejs npm libnss3-dev \
+    && apt-get -y install --no-install-recommends git nodejs libnss3-dev \
     libatk-adaptor libgtk2.0-0 libgtk-3-0 libgbm-dev libxss1 libasound2 wget \
     libx11* libxcb-dri*
 
