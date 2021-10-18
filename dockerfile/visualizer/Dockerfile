@@ -18,6 +18,7 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 RUN apt-get update \
     && apt install curl \
     && curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh \
+    && bash nodesource_setup.sh
   
 # Configure apt and install packages
 RUN apt-get update \
